@@ -94,16 +94,32 @@ namespace DogGo.Repositories
             }
         }
 
-        public Dog AddDog(Dog dog)
+        public void AddDog(Dog dog)
         {
-            Dog thisDog = new Dog();
-            return thisDog;
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        INSERT INTO Dog (Name, OwnerId, Breed, Notes, ImageUrl)
+                        OUTPUT INSERTED.ID
+                        VALUES (@name, @ownerId, @breed, @notes, @imageUrl)";
+                    cmd.Parameters.AddWithValue("@name", dog.Name);
+                    cmd.Parameters.AddWithValue("@ownerId", dog.OwnerId);
+                    cmd.Parameters.AddWithValue("@breed", dog.Breed);
+                    cmd.Parameters.AddWithValue("@notes", dog.Notes);
+                    cmd.Parameters.AddWithValue("@imageUrl", dog.ImageUrl);
+                    int id = (int)cmd.ExecuteScalar();
+
+                    dog.Id = id;
+                }
+            }
         }
 
-        public Dog UpdateDog(Dog dog)
+        public void UpdateDog(Dog dog)
         {
-            Dog thisDog = new Dog();
-            return thisDog;
+
         }
         public void DeleteDog(int dogId)
         {
