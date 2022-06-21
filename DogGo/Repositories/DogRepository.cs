@@ -54,8 +54,36 @@ namespace DogGo.Repositories
         }
         public Dog GetById(int dogId)
         {
-            Dog thisDog = new Dog();
-            return thisDog;
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT * FROM Dog WHERE Id = @dogId";
+                    cmd.Parameters.AddWithValue("@dogId", dogId);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            Dog dog = new Dog
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
+                                Breed = reader.GetString(reader.GetOrdinal("Breed")),
+                                Notes = !reader.IsDBNull(reader.GetOrdinal("Notes")) ? reader.GetString(reader.GetOrdinal("Notes")) : " ",
+                                ImageUrl = !reader.IsDBNull(reader.GetOrdinal("ImageUrl")) ? reader.GetString(reader.GetOrdinal("ImageUrl")) : " "
+                            };
+
+                            return dog;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                }
+            }
         }
 
         public Dog AddDog(Dog dog)
