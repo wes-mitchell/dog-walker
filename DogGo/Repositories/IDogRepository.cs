@@ -6,6 +6,11 @@ namespace DogGo.Repositories
 {
     public interface IDogRepository
     {
-        List<Dog> GetDogsByOwner(int id);
+        List<Dog> GetAllDogs();
+        Dog GetById(int id);
+        void AddDog(Dog dog);
+        void UpdateDog(Dog dog);
+        void DeleteDog(int dogId);
+        //List<Dog> GetDogsByOwner(int id);
     }
 }
