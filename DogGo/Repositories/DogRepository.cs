@@ -162,33 +162,53 @@ namespace DogGo.Repositories
             }
         }
 
-        //public List<Dog> GetDogsByOwnerID(int id)
-        //{
-        //    using (SqlConnection conn = Connection)
-        //    {
-        //        conn.Open();
-        //        using (SqlCommand cmd = conn.CreateCommand())
-        //        {
-        //            cmd.CommandText = @"
-        //                    SELECT d.Id, d.Name, d.OwnerId, d.Breed, o.Name, o.Id as OwnId,         o.Email, o.Address, o.Phone, o.NeighborhoodId
-        //                    FROM Dog d
-        //                    JOIN Owner o ON o.Id = d.OwnerId
-        //                    WHERE o.Id = @id;";
+        public List<Dog> GetDogsByOwnerId(int ownerId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
 
-        //            cmd.Parameters.AddWithValue("@id", id);
-        //            using (SqlDataReader reader = cmd.ExecuteReader())
-        //            {
-        //                if (reader.Read())
-        //                {
-        //                    Dog dog = new Dog()
-        //                    {
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                                SELECT Id, Name, Breed, Notes, ImageUrl, OwnerId 
+                                FROM Dog
+                                WHERE OwnerId = @ownerId";
 
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return new List<Dog>();
-        //}
+                    cmd.Parameters.AddWithValue("@ownerId", ownerId);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+
+                        List<Dog> dogs = new List<Dog>();
+
+                        while (reader.Read())
+                        {
+                            Dog dog = new Dog()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                Breed = reader.GetString(reader.GetOrdinal("Breed")),
+                                OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId"))
+                            };
+
+                            // Check if optional columns are null
+                            if (reader.IsDBNull(reader.GetOrdinal("Notes")) == false)
+                            {
+                                dog.Notes = reader.GetString(reader.GetOrdinal("Notes"));
+                            }
+                            if (reader.IsDBNull(reader.GetOrdinal("ImageUrl")) == false)
+                            {
+                                dog.ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl"));
+                            }
+
+                            dogs.Add(dog);
+                        }
+
+                        return dogs;
+                    }
+                }
+            }
+        }
     }
 }

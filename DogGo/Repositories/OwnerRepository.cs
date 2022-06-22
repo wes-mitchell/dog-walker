@@ -81,8 +81,10 @@ namespace DogGo.Repositories
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
+
                         if (reader.Read())
                         {
+
                             Owner owner = new Owner
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
@@ -96,6 +98,7 @@ namespace DogGo.Repositories
                                     Id = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
                                     Name = reader.GetString(reader.GetOrdinal("NeighborhoodName"))
                                 }
+                                //Dogs = ownerDogs
                             };
 
                             return owner;
