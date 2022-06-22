@@ -4,16 +4,21 @@ using Microsoft.AspNetCore.Mvc;
 using DogGo.Models;
 using DogGo.Repositories;
 using System.Collections.Generic;
+using DogGo.Models.ViewModels;
 
 namespace DogGo.Controllers
 {
     public class OwnerController : Controller
     {
         private readonly IOwnerRespository _ownerRepo;
+        private readonly IDogRepository _dogRepo;
+        private readonly IWalkerRepository _walkerRepo;
 
-        public OwnerController(IOwnerRespository ownerRepo)
+        public OwnerController(IOwnerRespository ownerRepo, IDogRepository dogRepo, IWalkerRepository walkerRepo)
         {
             _ownerRepo = ownerRepo;
+            _dogRepo = dogRepo;
+            _walkerRepo = walkerRepo;
         }
 
 
@@ -29,8 +34,16 @@ namespace DogGo.Controllers
         public ActionResult Details(int id)
         {
             Owner owner = _ownerRepo.GetOwnerById(id);
+            List<Dog> dogs = _dogRepo.GetDogsByOwnerId(owner.Id);
+            List<Walker> walkers = _walkerRepo.GetWalkersInNeighborhood(owner.NeighborhoodId);
 
-            return View(owner);
+            ProfileViewModel vm = new ProfileViewModel
+            {
+                Owner = owner,
+                Dogs = dogs,
+                Walkers = walkers
+            };
+            return View(vm);
         }
 
         // GET: OwnerController/Create
@@ -50,7 +63,7 @@ namespace DogGo.Controllers
 
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return View(owner);
             }
@@ -105,7 +118,7 @@ namespace DogGo.Controllers
 
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return View(owner);
             }
