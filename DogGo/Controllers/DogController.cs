@@ -65,14 +65,16 @@ namespace DogGo.Controllers
         // GET: DogController/Edit/5
         public ActionResult Edit(int id)
         {
-            Dog dog = _dogRespository.GetById(id);
 
-            if (dog == null)
-            {
-                return NotFound();
-            }
+                int ownerId = GetCurrentUserId();
+                Dog dog = _dogRespository.GetById(id);
+                
+                if (dog == null || ownerId != dog.OwnerId)
+                {
+                    return NotFound();
+                }
 
-            return View(dog);
+                return View(dog);
         }
 
         // POST: DogController/Edit/5
