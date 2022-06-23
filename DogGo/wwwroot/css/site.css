@@ -51,6 +51,11 @@ button.accept-policy {
   line-height: inherit;
 }
 
+img.bg-info {
+    height: 50px;
+    width: 50px;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
